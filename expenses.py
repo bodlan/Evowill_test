@@ -1,6 +1,5 @@
 from datetime import datetime
 from mysql.connector import connect, Error
-from getpass import getpass
 import calendar
 
 
@@ -113,7 +112,7 @@ def db_connection():
         connection = connect(
             user=input('Enter username: '),
             host="localhost",
-            password=getpass("Enter password: "),
+            password=input("Enter password: "),
             database="expenses"
         )
         return connection
