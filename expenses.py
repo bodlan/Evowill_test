@@ -1,19 +1,3 @@
-# Задание можно выполнить на любом языке программирования, используя любую базу данных.
-# Ваша цель - показать best practices в выбранных технологиях.
-#
-# Создайте консольное приложение для контроля расходов.
-# В приложении должен быть следующий функционал:
-# Возможность записывать расходы по категориям. Например: Еда - 250.
-# Получать статистику расходов - по всем категориям сразу или по одной из них.
-# Возможность очистить все данные.
-# Посмотреть статистику расходов: за день, за месяц, за год
-# Внести расходы за какой-то конкретный день. Например 12.12.2012 Еда - 250
-# Добавить возможность иметь нескольких пользователей
-# Написать юнит тесты для приложения
-#
-# Для того, чтобы тестовое считалось готовым, должны работать все основные функции.
-# Должен быть репозиторий на GitHub/GitLab/Bitbucket и написан Readme файл с пошаговой инструкцией
-# для запуска и использования программы. Можно приложить скрины, показывающие, как она работает.
 from datetime import datetime
 from mysql.connector import connect, Error
 from getpass import getpass
@@ -127,13 +111,11 @@ class Expenses:
 def db_connection():
     try:
         connection = connect(
-            user="root",
+            user=input('Enter username: '),
             host="localhost",
-            password="bodlan123987",
+            password=getpass("Enter password: "),
             database="expenses"
         )
-        # user=input('Enter username: ')
-        # password=getpass("Enter password: ")
         return connection
     except Error as e:
         print(e)
@@ -142,8 +124,8 @@ def db_connection():
 def main():
     connection = db_connection()
     user_id = -1
-    choise = int(input("Add user to system - 1\nUse existed user - 2\n"))
-    if choise == 1:
+    choice = int(input("Add user to system - 1\nUse existed user - 2\n"))
+    if choice == 1:
         first_name = input("Add user first name: ")
         last_name=input("Add user last name: ")
         add_user_query = f"""
@@ -161,7 +143,7 @@ def main():
             connection.commit()
             for row in result:
                 user_id = int(row[0])
-    elif choise == 2:
+    elif choice == 2:
         show_users_query = """
         SELECT * FROM users
         """
@@ -176,20 +158,20 @@ def main():
         return -1
     user = Expenses(user_id, connection)
     while True:
-        choise = int(input("What to do?\nLook up data - 1\nAdd expense - 2\n"
+        choice = int(input("What to do?\nLook up data - 1\nAdd expense - 2\n"
                            "Delete all data - 3\nGet statistics - 4\nExit - 0\n"))
-        if choise == 1:
-            extraction = input("What to extract?\n"
+        if choice == 1:
+            extraction = input("What to look?\n"
                                "For example: \"food\"\nOr -1 if extract all\n")
             user.print_data(extraction)
-        elif choise == 2:
+        elif choice == 2:
             expense = input("Enter expense name: ")
             amount = int(input("Specify amount: "))
             time = datetime.strptime(input("Enter date:\nFor example \"Nov 19 2021\"\n"), '%b %d %Y')
             user.add_data(expense, amount, time)
-        elif choise == 3:
+        elif choice == 3:
             user.delete_data_from_db()
-        elif choise == 4:
+        elif choice == 4:
             year = int(input("Specify year: "))
             month = int(input("Specify month in number.\n"
                               "For example \"11\" equals to November"
@@ -201,7 +183,7 @@ def main():
                 day = int(input("Specify day: "))
                 if day == -1:
                     user.get_statistics(year, month, day)
-        elif choise == 0:
+        elif choice == 0:
             break
 
 
